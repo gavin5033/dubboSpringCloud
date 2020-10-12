@@ -5,22 +5,26 @@ spring:
         locator:
           lowerCaseServiceId: true
           enabled: true
-  redis:
-    timeout: 6000ms
-    #database: 10
-    #host: localhost #单实例redis用这个配置
-    #password:
-    #port: 6379
-    cluster: #集群用这个配置
-      nodes:
-        - 10.2.116.98:7000
-        - 10.2.116.98:7001
-        - 10.2.116.98:7002
-        - 10.2.116.98:7003
-        - 10.2.116.98:7004
-        - 10.2.116.98:7005
-      max-redirects: 2 #获取失败 最大重定向次数
-    #password: Redis@123
+      routes:
+        - id: web
+          uri: lb://zlt-web-dubbo
+          predicates:
+            - Path=/api-web/**
+          filters:
+            - StripPrefix=1
+            # 熔断降级配置
+            - name: Hystrix
+              args:
+                name: default
+                fallbackUri: 'forward:/defaultfallback'
+        - id: rest
+          uri: lb://zlt-rest-dubbo
+          predicates:
+            - Path=/api-rest/**
+          filters:
+            - StripPrefix=1
+
+
 
 
 # hystrix 信号量隔离，3秒后自动超时
@@ -33,7 +37,6 @@ hystrix:
           thread:
             timeoutInMilliseconds: 3000
   shareSecurityContext: true
-
 
 zlt:
   gateway:
@@ -51,9 +54,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-
-# 打印网关日志信息
-logging:
-  level:
-    org.springframework.cloud.gateway: debug

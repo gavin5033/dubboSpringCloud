@@ -1,0 +1,21 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: consumer-service
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      server-addr: 10.2.116.98:8851,10.2.116.98:8850,10.2.116.98:8849
+      username: nacos
+      password: nacos
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:7777
+
+
+feign:
+  sentinel:
+    enabled: true

@@ -11,6 +11,11 @@ public class IndexController {
         return "hi " + name;
     }
 
+    @RequestMapping("/hello2")
+    public String hello2(String name){
+        return "hi 2" + name;
+    }
+
     @RequestMapping("/timeout")
     public String timeout(){
         try{
